@@ -537,17 +537,27 @@ func PostProfile(w http.ResponseWriter, r *http.Request) {
 	if account != user.AccountName {
 		checkErr(ErrPermissionDenied)
 	}
-	query := `UPDATE profiles
-SET first_name=?, last_name=?, sex=?, birthday=?, pref=?, updated_at=CURRENT_TIMESTAMP()
-WHERE user_id = ?`
+
+	prof := Profile{}
+	row := db.QueryRow(`SELECT * FROM profiles WHERE user_id = ?`, user.ID)
+	err := row.Scan(&prof.UserID, &prof.FirstName, &prof.LastName, &prof.Sex, &prof.Birthday, &prof.Pref, &prof.UpdatedAt)
+	// TODO should escape the account name?
 	birth := r.FormValue("birthday")
 	firstName := r.FormValue("first_name")
 	lastName := r.FormValue("last_name")
 	sex := r.FormValue("sex")
 	pref := r.FormValue("pref")
-	_, err := db.Exec(query, firstName, lastName, sex, birth, pref, user.ID)
-	checkErr(err)
-	// TODO should escape the account name?
+	if err != sql.ErrNoRows {
+		query := `UPDATE profiles
+SET first_name=?, last_name=?, sex=?, birthday=?, pref=?, updated_at=CURRENT_TIMESTAMP()
+WHERE user_id = ?`
+		_, err := db.Exec(query, firstName, lastName, sex, birth, pref, user.ID)
+		checkErr(err)
+	} else {
+		query := `INSERT INTO profiles (user_id, first_name, last_name, sex, birthday, pref) VALUES (?, ?, ?, ?, ?, ?)`
+		_, err := db.Exec(query, user.ID, firstName, lastName, sex, birth, pref)
+		checkErr(err)
+	}
 	http.Redirect(w, r, "/profile/"+account, http.StatusSeeOther)
 }
 
