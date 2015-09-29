@@ -788,7 +788,12 @@ func main() {
 	r.HandleFunc("/initialize", myHandler(GetInitialize))
 	r.HandleFunc("/", myHandler(GetIndex))
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./static")))
-	log.Fatal(http.ListenAndServe(":8080", r))
+
+	webPort := os.Getenv("PORT")
+	if webPort == "" {
+		webPort = "8080"
+	}
+	log.Fatal(http.ListenAndServe(":"+webPort, r))
 }
 
 func checkErr(err error) {
