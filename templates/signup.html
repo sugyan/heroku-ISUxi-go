@@ -1,0 +1,28 @@
+{{ template "header.html" }}
+<h2>新規登録</h2>
+
+<div id="signup-form">
+  <form method="POST" action="/signup">
+    <div class="col-md-4 input-group">
+      <span class="input-group-addon">E-mail</span>
+      <input class="form-control" type="text" name="email" placeholder="E-mail address" />
+    </div>
+    <div class="col-md-4 input-group">
+      <span class="input-group-addon">パスワード</span>
+      <input class="form-control" type="password" name="password" />
+    </div>
+    <div class="col-md-4 input-group">
+      <span class="input-group-addon">アカウント名</span>
+      <input class="form-control" type="text" name="account_name" />
+    </div>
+    <div class="col-md-4 input-group">
+      <span class="input-group-addon">プロフィール名</span>
+      <input class="form-control" type="text" name="nick_name" />
+    </div>
+    <div class="col-md-2 input-group">
+      <input class="btn btn-default" type="submit" name="Submit" value="Submit" />
+    </div>
+  </form>
+</div>
+</body>
+</html>

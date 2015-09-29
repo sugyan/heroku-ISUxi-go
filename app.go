@@ -1,7 +1,9 @@
 package main
 
 import (
+	"crypto/rand"
 	"database/sql"
+	"encoding/hex"
 	"errors"
 	"github.com/go-sql-driver/mysql"
 	"github.com/gorilla/context"
@@ -77,9 +79,11 @@ var prefs = []string{"未入力",
 	"岡山県", "広島県", "山口県", "徳島県", "香川県", "愛媛県", "高知県", "福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"}
 
 var (
-	ErrAuthentication   = errors.New("Authentication error.")
-	ErrPermissionDenied = errors.New("Permission denied.")
-	ErrContentNotFound  = errors.New("Content not found.")
+	ErrAuthentication           = errors.New("Authentication error.")
+	ErrPermissionDenied         = errors.New("Permission denied.")
+	ErrContentNotFound          = errors.New("Content not found.")
+	ErrInvalidInput             = errors.New("Invalid input.")
+	ErrAccountNameAlreadyExists = errors.New("Account name already exists.")
 )
 
 func authenticate(w http.ResponseWriter, r *http.Request, email, passwd string) {
@@ -206,6 +210,10 @@ func myHandler(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
 				case rcv == ErrContentNotFound:
 					render(w, r, http.StatusNotFound, "error.html", struct{ Message string }{"要求されたコンテンツは存在しません"})
 					return
+				case rcv == ErrInvalidInput:
+					render(w, r, http.StatusBadRequest, "error.html", struct{ Message string }{"入力が不正です"})
+				case rcv == ErrAccountNameAlreadyExists:
+					render(w, r, http.StatusBadRequest, "error.html", struct{ Message string }{"アカウント名が既に存在しています"})
 				default:
 					var msg string
 					if e, ok := rcv.(runtime.Error); ok {
@@ -290,6 +298,38 @@ func GetLogout(w http.ResponseWriter, r *http.Request) {
 	session.Options = &sessions.Options{MaxAge: -1}
 	session.Save(r, w)
 	http.Redirect(w, r, "/login", http.StatusFound)
+}
+
+func GetSignup(w http.ResponseWriter, r *http.Request) {
+	render(w, r, http.StatusOK, "signup.html", struct{}{})
+}
+
+func PostSignup(w http.ResponseWriter, r *http.Request) {
+	email := r.FormValue("email")
+	passwd := r.FormValue("password")
+	accountName := r.FormValue("account_name")
+	nickName := r.FormValue("nick_name")
+	if email == "" || passwd == "" || accountName == "" || nickName == "" {
+		checkErr(ErrInvalidInput)
+	}
+	row := db.QueryRow(`SELECT COUNT(1) AS cnt FROM users WHERE account_name = ?`, accountName)
+	cnt := new(int)
+	checkErr(row.Scan(cnt))
+	if *cnt > 0 {
+		checkErr(ErrAccountNameAlreadyExists)
+	}
+	bytes := make([]byte, 3)
+	_, err := rand.Read(bytes)
+	checkErr(err)
+	salt := hex.EncodeToString(bytes)
+	result, err := db.Exec(`INSERT INTO users (email, nick_name, account_name, passhash) VALUES (?, ?, ?, SHA2(CONCAT(?, ?), 512))`, email, nickName, accountName, passwd, salt)
+	checkErr(err)
+	lastInsertID, err := result.LastInsertId()
+	checkErr(err)
+	_, err = db.Exec(`INSERT INTO salts (user_id, salt) VALUES (?, ?)`, lastInsertID, salt)
+	checkErr(err)
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func GetIndex(w http.ResponseWriter, r *http.Request) {
@@ -786,6 +826,10 @@ func main() {
 	l.Methods("GET").HandlerFunc(myHandler(GetLogin))
 	l.Methods("POST").HandlerFunc(myHandler(PostLogin))
 	r.Path("/logout").Methods("GET").HandlerFunc(myHandler(GetLogout))
+
+	s := r.Path("/signup").Subrouter()
+	s.Methods("GET").HandlerFunc(myHandler(GetSignup))
+	s.Methods("POST").HandlerFunc(myHandler(PostSignup))
 
 	p := r.Path("/profile/{account_name}").Subrouter()
 	p.Methods("GET").HandlerFunc(myHandler(GetProfile))
