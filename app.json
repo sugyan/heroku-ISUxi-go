@@ -1,0 +1,6 @@
+{
+    "name": "ISUxi",
+    "addons": [
+        "cleardb:ignite"
+    ]
+}
