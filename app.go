@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"html/template"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -713,6 +714,13 @@ func PostFriends(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetInitialize(w http.ResponseWriter, r *http.Request) {
+	bytes, err := ioutil.ReadFile("./sql/schema.sql")
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, sql := range strings.Split(string(bytes), ";") {
+		db.Exec(sql)
+	}
 	db.Exec("DELETE FROM relations WHERE id > 500000")
 	db.Exec("DELETE FROM footprints WHERE id > 500000")
 	db.Exec("DELETE FROM entries WHERE id > 500000")
@@ -779,7 +787,7 @@ func main() {
 
 	r.HandleFunc("/initialize", myHandler(GetInitialize))
 	r.HandleFunc("/", myHandler(GetIndex))
-	r.PathPrefix("/").Handler(http.FileServer(http.Dir("../static")))
+	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./static")))
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
 
