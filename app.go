@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"path"
 	"runtime"
@@ -749,6 +750,23 @@ func main() {
 	if dbname == "" {
 		dbname = "isucon5q"
 	}
+
+	databaseURL := os.Getenv("CLEARDB_DATABASE_URL")
+	if databaseURL != "" {
+		url, err := url.Parse(databaseURL)
+		if err != nil {
+			log.Fatal(err)
+		}
+		host = url.Host
+		dbname = url.Path[1:]
+		userInfo := url.User
+		user = userInfo.Username()
+		pass, exist := userInfo.Password()
+		if exist {
+			password = pass
+		}
+	}
+
 	ssecret := os.Getenv("ISUCON5_SESSION_SECRET")
 	if ssecret == "" {
 		ssecret = "beermoris"
