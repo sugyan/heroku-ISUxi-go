@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <title>ISUxi</title>
+</head>
+
+<body class="container">
+<a href="https://github.com/sugyan/heroku-ISUxi-go"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/82b228a3648bf44fc1163ef44c62fcc60081495e/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png"></a>
+<h1 class="jumbotron"><a href="/">ISUxiへようこそ!</a></h1>
+
+<h2>ISUxi login</h2>
+
+<div class="text-danger" id="logout-message">{{.Message}}</div>
+
+<div id="login-form">
+  <form method="POST" action="/login">
+    <div class="col-md-4 input-group">
+      <span class="input-group-addon">E-mail</span>
+      <input class="form-control" type="text" name="email" placeholder="E-mail address" />
+    </div>
+    <div class="col-md-4 input-group">
+      <span class="input-group-addon">パスワード</span>
+      <input class="form-control" type="password" name="password" />
+    </div>
+    <div class="col-md-2 input-group">
+      <input class="btn btn-default" type="submit" name="Login" value="Login" />
+      <a class="btn btn-default" href="/signup" />Sign up</a>
+    </div>
+  </form>
+</div>
+
+</body>
+</html>
