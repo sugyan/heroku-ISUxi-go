@@ -35,7 +35,7 @@
       <ul class="list-group">
         {{ range .Footprints }}
         {{ $owner := getUser .OwnerID }}
-        <li class="list-group-item footprints-footprint">{{ .CreatedAt.Format "2006-01-02 15:04:05" }}: <a href="/profile/{{ $owner.AccountName }}">{{ $owner.NickName }}さん</a></li>
+        <li class="list-group-item footprints-footprint">{{ .Updated.Format "2006-01-02 15:04:05" }}: <a href="/profile/{{ $owner.AccountName }}">{{ $owner.NickName }}さん</a></li>
         {{ end }}
       </ul>
     </div>
