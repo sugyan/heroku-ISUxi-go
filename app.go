@@ -451,7 +451,7 @@ LIMIT 10`, user.ID)
 	}
 	rows.Close()
 
-	rows, err = db.Query(`SELECT user_id, owner_id, DATE(created_at) AS date, MAX(created_at) AS updated
+	rows, err = db.Query(`SELECT user_id, owner_id, created_at AS date, MAX(created_at) AS updated
 FROM footprints
 WHERE user_id = ?
 GROUP BY user_id, owner_id, DATE(created_at)
@@ -699,7 +699,7 @@ func GetFootprints(w http.ResponseWriter, r *http.Request) {
 
 	user := getCurrentUser(w, r)
 	footprints := make([]Footprint, 0, 50)
-	rows, err := db.Query(`SELECT user_id, owner_id, DATE(created_at) AS date, MAX(created_at) as updated
+	rows, err := db.Query(`SELECT user_id, owner_id, created_at AS date, MAX(created_at) as updated
 FROM footprints
 WHERE user_id = ?
 GROUP BY user_id, owner_id, DATE(created_at)
