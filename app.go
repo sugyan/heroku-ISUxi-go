@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	"github.com/mattn/go-runewidth"
 	"html/template"
 	"io/ioutil"
 	"log"
@@ -254,11 +255,8 @@ func render(w http.ResponseWriter, r *http.Request, status int, file string, dat
 		"prefectures": func() []string {
 			return prefs
 		},
-		"substring": func(s string, l int) string {
-			if len(s) > l {
-				return s[:l]
-			}
-			return s
+		"truncate": func(s string, l int) string {
+			return runewidth.Truncate(s, l, "...")
 		},
 		"split": strings.Split,
 		"getEntry": func(id int) Entry {

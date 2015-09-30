@@ -26,7 +26,7 @@
   <div class="panel panel-primary entry">
     <div class="entry-title">タイトル: <a href="/diary/entry/{{ .ID }}">{{ .Title }}</a></div>
     <div class="entry-content">
-      {{ $content := substring .Content 60 }}
+      {{ $content := truncate .Content 60 }}
       {{ range (split $content "\n") }}
       {{ . }}<br/>
       {{ end }}
