@@ -255,8 +255,9 @@ func render(w http.ResponseWriter, r *http.Request, status int, file string, dat
 			return prefs
 		},
 		"substring": func(s string, l int) string {
-			if len(s) > l {
-				return s[:l]
+			rs := []rune(s)
+			if len(rs) > l {
+				return string(rs[:l])
 			}
 			return s
 		},
