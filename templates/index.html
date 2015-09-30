@@ -50,7 +50,7 @@
       <div class="comments-comment">
         <ul class="list-group">
           {{ $commentUser := getUser .UserID }}
-          <li class="list-group-item comment-owner"><a href="/profile/{{ $commentUser.AccountName}}">{{ $commentUser.NickName }}さん</a>:</li>
+		  <li class="list-group-item comment-owner"><a href="/profile/{{ $commentUser.AccountName}}">{{ $commentUser.NickName }}さん</a>からあなたの<a href="/diary/entry/{{ .EntryID }}">日記</a>へのコメント:</li>
           <li class="list-group-item comment-comment">{{ if ge (len .Comment) 30 }}{{ substring .Comment 27 }}...{{ else }}{{ .Comment }}{{ end }}</li>
           <li class="list-group-item comment-created-at">投稿時刻:{{ .CreatedAt.Format "2006-01-02 15:04:05" }}</li>
         </ul>
@@ -84,7 +84,7 @@
           {{ $commentOwner := getUser .UserID }}
           {{ $entry := getEntry .EntryID }}
           {{ $entryOwner := getUser $entry.UserID }}
-          <li class="list-group-item comment-from-to"><a href="/profile/{{ $commentOwner.AccountName }}">{{ $commentOwner.NickName }}さん</a>から<a href="/profile/{{ $entryOwner.AccountName }}">{{ $entryOwner.NickName }}さん</a>へのコメント:</li>
+		  <li class="list-group-item comment-from-to"><a href="/profile/{{ $commentOwner.AccountName }}">{{ $commentOwner.NickName }}さん</a>から<a href="/profile/{{ $entryOwner.AccountName }}">{{ $entryOwner.NickName }}さん</a>の<a href="/diary/entry/{{ .EntryID }}">日記</a>へのコメント:</li>
           <li class="list-group-item comment-comment">{{ if ge (len .Comment) 30 }}{{ substring .Comment 27 }}...{{ else }}{{ .Comment }}{{ end }}</li>
           <li class="list-group-item comment-created-at">投稿時刻:{{ .CreatedAt.Format "2006-01-02 15:04:05" }}</li>
         </ul>
