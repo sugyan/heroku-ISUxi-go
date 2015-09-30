@@ -22,6 +22,11 @@
 		{
 			"ImportPath": "github.com/gorilla/sessions",
 			"Rev": "aa5e036e6c44aec69a32eb41097001978b29ad31"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-runewidth",
+			"Comment": "travisish-37-g12e0ff7",
+			"Rev": "12e0ff74603c9a3209d8bf84f8ab349fe1ad9477"
 		}
 	]
 }
